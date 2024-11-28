@@ -1,16 +1,26 @@
 import { CustomFilter, Hero, SearchBar, CarCard, ShowMore } from "@/components";
 import { fetchCars } from "@/utils";
 import { fuels, yearsOfProduction } from "@/constants";
-import { HomeProps } from "@/types";
+import { FilterProps, HomeProps } from "@/types";
 
-export default async function Home({searchParams}: HomeProps) {
+type searchParams = Promise<{ 
+  manufacturer?: string;
+  year?: number;
+  fuel?: string;
+  limit?: number;
+  model?: string;
+ }>
+
+export default async function Home({params}: {params: searchParams}) {
+
+  const {manufacturer, year, fuel, limit, model} = await params;
 
   const allCars = await fetchCars({
-    manufacturer: searchParams.manufacturer || "",
-    year: searchParams.year || 2022,
-    fuel: searchParams.fuel || "",
-    limit: searchParams.limit || 12,
-    model: searchParams.model || ""
+    manufacturer: manufacturer || "",
+    year: year || 2022,
+    fuel: fuel || "",
+    limit: limit || 12,
+    model: model || ""
   });
   const isDataEmpty = !Array.isArray(allCars) || allCars.length <1 || !allCars;
 
@@ -41,8 +51,8 @@ export default async function Home({searchParams}: HomeProps) {
             </div>
 
             <ShowMore
-              pageNumber={(searchParams.limit || 10) / 10}
-              isNext = {(searchParams.limit || 10) > allCars.length}
+              pageNumber={(limit || 10) / 10}
+              isNext = {(limit || 10) > allCars.length}
             />
           </section>
         ) : (
